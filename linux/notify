@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Notify beginning of focus period
+notify-send --icon=gtk-info -t 10 $1
+
+# Notify end of focus period
+echo 'notify-send --icon=gtk-info -t 60 "No longer in focus period"' | at now + $2 minutes
+

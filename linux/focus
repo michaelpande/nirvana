@@ -1,0 +1,18 @@
+#!/bin/bash
+
+TOKEN=$(cat ../slack-token) 
+while read LINE; do eval "$LINE"; done < ../config
+
+FOCUS_TIME_SECONDS=$((($FOCUS_TIME-1) * 60))
+# Set slack status
+curl "https://slack.com/api/users.profile.set?token=$TOKEN&profile=%7B%20%20%20%20%20%22status_text%22%3A%20%22$FOCUS_MESSAGE"$(ruby -e "puts (Time.now + $FOCUS_TIME_SECONDS).strftime('%H:%M')")"%22%2C%20%20%20%20%20%22status_emoji%22%3A%20%22%3A$FOCUS_EMOJI%3A%22%20%7D"
+
+# Do no disturb slack
+curl "https://slack.com/api/dnd.setSnooze?token=$TOKEN&num_minutes=$FOCUS_TIME"
+
+
+# Notify
+sh ./notify "Focusing for $FOCUS_TIME minutes" $FOCUS_TIME
+
+# Unfocus after n minutes
+echo 'sh ./unfocus' | at now + $FOCUS_TIME minutes
